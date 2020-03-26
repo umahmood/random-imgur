@@ -77,7 +77,7 @@ def download_imgur(url):
 	except (exceptions.ConnectionError, exceptions.HTTPError) as e:
 		pass
 
-def main(max_imgs, download_dir):
+def main(max_imgs, download_dir, verbose=False):
 	count = 0
 	while count < max_imgs:
 		imgur_url, file_name = get_imgur_url()
@@ -85,16 +85,18 @@ def main(max_imgs, download_dir):
 		if not img_data or is_placeholder_image(img_data):
 			continue
 		save_image(download_dir, file_name, file_type, img_data)
+		if verbose: print('Downloaded image',imgur_url)
 		count += 1
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description="Process command line arguments for " + __file__)
 	parser.add_argument('--img', type=int, required=True, nargs='?', help='number of images to download.')
 	parser.add_argument('--dir', type=str, default="downloaded_imgurs", nargs='?', help="download directory.")
+	parser.add_argument('--verbose', action='store_true', help='print downloaded image urls.')
 	
 	args = parser.parse_args()
 
 	if not os.path.exists(args.dir): 
 		os.mkdir(args.dir)
 
-	sys.exit(main(args.img, args.dir))
+	sys.exit(main(args.img, args.dir, args.verbose))
